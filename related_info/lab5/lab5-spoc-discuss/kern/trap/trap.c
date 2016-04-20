@@ -194,7 +194,13 @@ trap_dispatch(struct trapframe *tf) {
     char c;
 
     int ret=0;
-
+    if (tf->tf_trapno != T_SYSCALL){
+        int reg1;
+       // asm volatile (
+        //   "mov %%cs, %0;"
+          //  : "=m"(reg1));
+        cprintf("ring : %d\n", tf->tf_cs & 3);
+    }
     switch (tf->tf_trapno) {
     case T_PGFLT:  //page fault
         if ((ret = pgfault_handler(tf)) != 0) {

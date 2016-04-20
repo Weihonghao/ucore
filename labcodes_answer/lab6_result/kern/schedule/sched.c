@@ -65,6 +65,7 @@ wakeup_proc(struct proc_struct *proc) {
             proc->state = PROC_RUNNABLE;
             proc->wait_state = 0;
             if (proc != current) {
+            	cprintf("wake up, proc %d enqueue\n", proc->pid);
                 sched_class_enqueue(proc);
             }
         }
@@ -84,9 +85,11 @@ schedule(void) {
         current->need_resched = 0;
         if (current->state == PROC_RUNNABLE) {
             sched_class_enqueue(current);
+            cprintf("schedule, proc %d enqueue\n", current->pid);
         }
         if ((next = sched_class_pick_next()) != NULL) {
             sched_class_dequeue(next);
+            cprintf("schedule, proc %d dequeue\n", next->pid);
         }
         if (next == NULL) {
             next = idleproc;

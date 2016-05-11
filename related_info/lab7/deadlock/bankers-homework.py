@@ -9,11 +9,11 @@ class Bankers(object):
         self.RESOURCE = totalResource
 
     def SignProcesses(self, max_, allocated_):
-        self.max = max_
-        self.allocated = allocated_
-        self.need = self.CalcNeed()
-        self.avaliable = self.CalcAvaliable()
-        self.finished = [False]*len(self.allocated)
+        self.max = np.array(max_)
+        self.allocated = np.array(allocated_)
+        self.need = np.array(self.CalcNeed())
+        self.avaliable = np.array(self.CalcAvaliable())
+        self.finished = np.array([False]*len(self.allocated))
 
     def Difference(self,a,b):
         #return matrix subtracted from a by b
@@ -45,18 +45,38 @@ class Bankers(object):
         #check if less avaliable than Request
         # YOUR CODE, YOUR ID
         #check END here
+				if (self.need[index] <= self.avaliable).all():
+					self.allocated[index] += self.need[index]
+					self.avaliable -= self.need[index]
+					self.need[index] = 0
+					return True
+				return False
 
         #allocating what they need.
         # YOUR CODE, YOUR ID
         #allocating END here
-        pass
 
     def TempSafeCheckAfterRelease(self):
         #check if at least one request can be done after previous process done. not check whole sequances.
         #if every element of Requests can't accepted after previous process done, this mean it is not safe state
         # YOUR CODE, YOU ID
         #check END here
-        pass
+				for i in range(len(self.finished)):
+					if (self.max[i] == self.allocated[i]).all():
+						self.finished[i] = True
+						self.avaliable += self.allocated[i]
+						break
+						
+				flag = 0
+				
+				for i in range(len(self.finished)):
+					if (self.finished[i] == False).all() and (self.need[i] < self.avaliable).all():
+						flag = 1
+						break
+				if flag == 1:
+					return True
+				else:
+					return False
 
     def print_matrixes(self):
         print "_____________________________________________"
